@@ -11,4 +11,7 @@ public interface FournisseurService {
     Fournisseur update(Long id, Fournisseur fournisseurDetails);
     void deleteById(Long id);
 
+    List<Fournisseur> findByNom(String nom);
+    List<Fournisseur> findByEmailEndingWith(String emailSuffix);
+
 }

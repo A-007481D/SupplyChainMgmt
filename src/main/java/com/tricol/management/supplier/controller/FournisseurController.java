@@ -64,4 +64,18 @@ public class FournisseurController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @GetMapping("/search/byNom")
+    @ResponseBody
+    public List<Fournisseur> searchByNom(@RequestParam("nom") String nom) {
+        return fournisseurService.findByNom(nom);
+    }
+
+    @GetMapping("/search/byEmailSuffix")
+    @ResponseBody
+    public List<Fournisseur> searchByEmailSuffix(@RequestParam("suffix") String suffix) {
+        return fournisseurService.findByEmailEndingWith(suffix);
+    }
+
 }
+

@@ -61,4 +61,14 @@ public class FournisseurServiceImpl implements FournisseurService {
     public void deleteById(Long id) {
         fournisseurRepository.deleteById(id);
     }
+
+    @Override
+    public List<Fournisseur> findByNom(String nom) {
+        return fournisseurRepository.findByNom(nom);
+    }
+
+    @Override
+    public List<Fournisseur> findByEmailEndingWith(String emailSuffix) {
+        return fournisseurRepository.findByEmailEndingWith(emailSuffix);
+    }
 }
