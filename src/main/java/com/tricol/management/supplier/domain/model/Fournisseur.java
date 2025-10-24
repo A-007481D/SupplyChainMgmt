@@ -9,6 +9,9 @@ public class Fournisseur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "nom", nullable = false)
+    private String nom;
+
     @Column(name = "societe", nullable = false)
     private String societe;
 
@@ -32,8 +35,7 @@ public class Fournisseur {
 
     public Fournisseur() {
     }
-
-    public Fournisseur(Long id, String societe, String adresse, String contact, String email, String telephone, String ville, String ice) {
+    public Fournisseur(Long id, String nom, String societe, String adresse, String contact, String email, String telephone, String ville, String ice) {
         this.id = id;
         this.societe = societe;
         this.adresse = adresse;
@@ -60,7 +62,8 @@ public class Fournisseur {
     public void setVille(String ville) { this.ville = ville; }
     public String getIce() { return ice; }
     public void setIce(String ice) { this.ice = ice; }
-
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
 
     @Override
     public String toString() {
