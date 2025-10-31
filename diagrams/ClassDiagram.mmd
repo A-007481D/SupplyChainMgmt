@@ -1,0 +1,116 @@
+classDiagram
+    direction LR
+
+%% ===== CLASSES =====
+
+    class Supplier {
+        -Long id
+        -String email
+        -String phone
+        -String address
+        -String company
+        -String ice
+        -String city
+        +getFullName() String
+        +addSupplier() void
+        +updateSupplier() void
+        +deleteSupplier() void
+        +getSupplierById(id: Long) Supplier
+        +getAllSuppliers() List~Supplier~
+    }
+
+    class Product {
+        -Long id
+        -String name
+        -String description
+        -double price
+        -int stockQuantity
+        +addProduct() void
+        +updateProduct() void
+        +deleteProduct() void
+        +getProductById(id: Long) Product
+        +getAllProducts() List~Product~
+    }
+
+    class SupplierOrder {
+        -Long id
+        -LocalDate orderDate
+        -OrderStatus status
+        -double totalAmount
+        +createOrder() void
+        +updateOrder() void
+        +cancelOrder() void
+        +getOrderById(id: Long) SupplierOrder
+        +getAllOrders() List~SupplierOrder~
+        +recalculateAverageCost(qty: int, cost: double) void
+    }
+
+    class ProductOrder {
+        -Long id
+        -Product product
+        -int quantity
+        -double unitPrice
+        -double lineTotal
+        +calculateLineTotal() double
+    }
+
+    class Stock {
+        -Long id
+        -Product product
+        -int quantity
+        +addStock() void
+        +updateStock() void
+        +removeStock() void
+        +getStockByProductId(productId: Long) Stock
+        +getAllStocks() List~Stock~
+    }
+
+    class StockMovement {
+        -Long id
+        -Product product
+        -MovementType type
+        -int quantity
+        -double unitCost
+        -LocalDate movementDate
+        -SupplierOrder supplierOrder
+        -ValuationMethod valuationMethod
+        +applyMovement() void
+    }
+
+%% ===== ENUMS =====
+
+    class OrderStatus {
+        <<enumeration>>
+        PENDING
+        COMPLETED
+        ARRIVED
+        CANCELLED
+    }
+
+    class MovementType {
+        <<enumeration>>
+        ENTRY
+        EXIT
+        ADJUSTMENT
+    }
+
+%%    class ValuationMethod {
+%%        <<enumeration>>
+%%        FIFO
+%%        CUMP
+%%    }
+
+%% ===== RELATIONSHIPS =====
+%% many to many supplierOrder to Product resulting in a ProductOrder associative table
+    Supplier "1" --> "0..*" SupplierOrder : places
+    SupplierOrder "0..*" -- "1..*" ProductOrder : contains
+    ProductOrder "*" -- "*" Product : references
+    Product "1" --> "0..*" StockMovement : tracked by
+    StockMovement "0..*" --> "0..1" SupplierOrder : related to
+    Stock "1" --> "*" Product : holds
+
+%% ===== ENUM RELATIONSHIPS =====
+
+    SupplierOrder --> OrderStatus : uses
+    StockMovement --> MovementType : uses
+%%    StockMovement --> ValuationMethod : uses
