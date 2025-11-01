@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: supplier-management
+  labels:
+    app: supplier-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: supplier-management
+  template:
+    metadata:
+      name: supplier-management
+      labels:
+        app: supplier-management
+    spec:
+      containers:
+        - name: supplier-management
+          image: nginx
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always
+      

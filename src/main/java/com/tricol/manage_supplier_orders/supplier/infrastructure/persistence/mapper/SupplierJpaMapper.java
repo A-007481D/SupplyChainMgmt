@@ -3,6 +3,7 @@ package com.tricol.manage_supplier_orders.supplier.infrastructure.persistence.ma
 import com.tricol.manage_supplier_orders.supplier.domain.model.Supplier;
 import com.tricol.manage_supplier_orders.supplier.infrastructure.persistence.entity.SupplierJpaEntity;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
 
