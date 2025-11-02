@@ -42,6 +42,11 @@ jobs:
         distribution: 'temurin'
         cache: 'maven'
     
+    - name: Set up repo owner
+      id: repo
+      run: |
+        echo "repo_owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
+
     - name: Build with Maven
       run: mvn -B clean package -DskipTests
     
@@ -73,8 +78,8 @@ jobs:
         context: .
         push: ${{ github.ref == 'refs/heads/main' }}
         tags: |
-          ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
-          ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          ${{ env.CONTAINER_REGISTRY }}/${{ steps.repo.outputs.repo_owner }}/${{ env.IMAGE_NAME }}:latest
+          ${{ env.CONTAINER_REGISTRY }}/${{ steps.repo.outputs.repo_owner }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
         build-args: |
