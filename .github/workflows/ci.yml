@@ -1,1 +1,65 @@
-name: ci-yaml
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ main, develop, 'feature/*', 'bugfix/*', 'hotfix/*', 'release/*' ]
+  pull_request:
+    branches: [ main, develop, spring-boot-version ]
+
+env:
+  MAVEN_OPTS: -Djava.security.egd=file:/dev/./urandom -Dspring.profiles.active=ci
+  IMAGE_NAME: manage-supplier-orders
+  CONTAINER_REGISTRY: ghcr.io
+  VERSION: ${GITHUB_SHA::8}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: 'maven'
+    
+    - name: Build with Maven
+      run: mvn -B clean package -DskipTests
+    
+    - name: Run tests
+      run: mvn test
+      env:
+        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
+        SPRING_DATASOURCE_USERNAME: test
+        SPRING_DATASOURCE_PASSWORD: test
+    
+    - name: Build and push Docker image
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: ${{ github.ref == 'refs/heads/main' }}
+        tags: |
+          ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+          ${{ env.CONTAINER_REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
