@@ -10,77 +10,56 @@ env:
   MAVEN_OPTS: -Djava.security.egd=file:/dev/./urandom -Dspring.profiles.active=ci
   IMAGE_NAME: manage-supplier-orders
   CONTAINER_REGISTRY: ghcr.io
-  VERSION: ${GITHUB_SHA::8}
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: testdb
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-    
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: 'maven'
-    
-    - name: Set up repo owner
-      id: repo
-      run: |
-        echo "repo_owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Build with Maven
-      run: mvn -B clean package -DskipTests
-    
-    - name: Run tests
-      run: mvn test
-      env:
-        SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
-        SPRING_DATASOURCE_USERNAME: test
-        SPRING_DATASOURCE_PASSWORD: test
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-      with:
-        driver: docker-container
-        driver-options: image=moby/buildkit:buildx-stable-1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
 
-    - name: Login to GitHub Container Registry
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-      uses: docker/login-action@v2
-      with:
-        registry: ${{ env.CONTAINER_REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set version (short SHA)
+        id: version
+        run: echo "VERSION=${GITHUB_SHA::8}" >> $GITHUB_ENV
 
-    - name: Build and push Docker image
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-      uses: docker/build-push-action@v4
-      with:
-        context: .
-        push: ${{ github.ref == 'refs/heads/main' }}
-        tags: |
-          ${{ env.CONTAINER_REGISTRY }}/${{ steps.repo.outputs.repo_owner }}/${{ env.IMAGE_NAME }}:latest
-          ${{ env.CONTAINER_REGISTRY }}/${{ steps.repo.outputs.repo_owner }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        build-args: |
-          BUILDKIT_INLINE_CACHE=1
+      - name: Set up repo owner
+        id: repo
+        run: echo "repo_owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
+
+      - name: Build with Maven
+        run: mvn -B clean package -DskipTests
+
+      - name: Run tests
+        run: mvn test
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/testdb
+          SPRING_DATASOURCE_USERNAME: test
+          SPRING_DATASOURCE_PASSWORD: test
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GitHub Container Registry
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: |
+            ${{ env.CONTAINER_REGISTRY }}/${{ steps.repo.outputs.repo_owner }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.CONTAINER_REGISTRY }}/${{ steps.repo.outputs.repo_owner }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
