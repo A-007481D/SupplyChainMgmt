@@ -1,27 +1,31 @@
-package com.tricol.manage_supplier_orders.product.domain.model;
+package com.tricol.manage_supplier_orders.product.infrastructure.persistence.entity;
 
 import com.tricol.manage_supplier_orders.product.domain.enums.Category;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+@Entity
+@Table(name = "product")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+@Builder
+public class ProductJpaEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(length = 100)
     private String name;
     private String description;
     private double price;
     private Category category;
     private String unit;
     private int stockQuantity;
-    private Long supplierId;
 
+    @Version
+    private Long version;
 }
