@@ -1,0 +1,71 @@
+### 🟢 Create Product
+POST http://localhost:8080/api/products
+Content-Type: application/json
+
+{
+  "name": "Safety Gloves",
+  "description": "High-quality protective gloves for industrial use",
+  "price": 12.50,
+  "category": "EQUIPMENT",
+  "unit": "PAIR",
+  "stockQuantity": 100,
+  "supplierId": 1
+}
+
+###
+
+### 🟢 Get All Products (Paginated)
+GET http://localhost:8080/api/products
+Accept: application/json
+
+###
+
+### 🟢 Get Product By ID
+GET http://localhost:8080/api/products/10
+Accept: application/json
+
+###
+
+### 🟡 Update Product
+PUT http://localhost:8080/api/products/10
+Content-Type: application/json
+
+{
+  "name": "Updated Gloves",
+  "description": "Updated industrial gloves with extra protection",
+  "price": 15.75,
+  "category": "EQUIPMENT",
+  "unit": "PAIR",
+  "stockQuantity": 200,
+  "supplierId": 1
+}
+
+###
+
+### 🔍 Search Products by Name
+GET http://localhost:8080/api/products/search?name=gloves
+Accept: application/json
+
+###
+
+### 🧾 Get Products by Supplier
+GET http://localhost:8080/api/products/supplier/1
+Accept: application/json
+
+###
+
+### 🗂 Get Products by Category
+GET http://localhost:8080/api/products/category/EQUIPMENT
+Accept: application/json
+
+###
+
+### ⚠️ Get Low-Stock Products
+GET http://localhost:8080/api/products/low-stock?threshold=50
+Accept: application/json
+
+###
+
+### 🔴 Delete Product
+DELETE http://localhost:8080/api/products/1
+Accept: application/json

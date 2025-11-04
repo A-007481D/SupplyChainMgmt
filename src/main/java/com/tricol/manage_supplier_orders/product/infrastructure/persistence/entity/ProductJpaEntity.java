@@ -22,10 +22,12 @@ public class ProductJpaEntity {
     private String name;
     private String description;
     private double price;
+    @Enumerated(EnumType.STRING)
     private Category category;
     private String unit;
     private int stockQuantity;
+    private Long supplierId;
 
-    @Version
-    private Long version;
+//    @Version
+//    private Long version;
 }

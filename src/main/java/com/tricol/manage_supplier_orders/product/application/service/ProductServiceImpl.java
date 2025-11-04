@@ -1,6 +1,7 @@
 package com.tricol.manage_supplier_orders.product.application.service;
 
 import com.tricol.manage_supplier_orders.product.application.ports.ProductServicePort;
+import com.tricol.manage_supplier_orders.product.domain.enums.Category;
 import com.tricol.manage_supplier_orders.product.domain.model.Product;
 import com.tricol.manage_supplier_orders.product.domain.ports.ProductRepositoryPort;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -77,5 +79,10 @@ public class ProductServiceImpl implements ProductServicePort {
     @Override
     public List<Product> getLowStockProducts(Integer threshold) {
         return productRepositoryPort.findLowStockProducts(threshold);
+    }
+
+    @Override
+    public List<Product> getProductsByCategory(Category category) {
+        return productRepositoryPort.findProductsByCategory(category);
     }
 }

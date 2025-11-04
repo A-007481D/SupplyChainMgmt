@@ -1,5 +1,6 @@
 package com.tricol.manage_supplier_orders.product.domain.ports;
 
+import com.tricol.manage_supplier_orders.product.domain.enums.Category;
 import com.tricol.manage_supplier_orders.product.domain.model.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,4 +23,7 @@ public interface ProductRepositoryPort {
     List<Product> findBySupplierId(Long supplierId);
 
     List<Product> findLowStockProducts(Integer threshold);
+
+    List<Product> findProductsByCategory(Category category);
+
 }
