@@ -1,0 +1,48 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-product
+      author: A-007481D
+      changes:
+        - createTable:
+            tableName: product
+            ifNotExists: true
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: price
+                  type: NUMERIC(12,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(100)
+              - column:
+                  name: unit
+                  type: VARCHAR(50)
+              - column:
+                  name: stock_quantity
+                  type: INTEGER
+                  defaultValueNumeric: 0
+              - column:
+                  name: supplier_id
+                  type: BIGINT
+        - addForeignKeyConstraint:
+            baseTableName: product
+            baseColumnNames: supplier_id
+            referencedTableName: supplier
+            referencedColumnNames: id
+            constraintName: fk_product_supplier
