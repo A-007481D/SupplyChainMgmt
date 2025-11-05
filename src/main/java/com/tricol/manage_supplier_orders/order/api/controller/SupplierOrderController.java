@@ -2,6 +2,7 @@ package com.tricol.manage_supplier_orders.order.api.controller;
 
 import com.tricol.manage_supplier_orders.order.api.dto.CreateSupplierOrderRequest;
 import com.tricol.manage_supplier_orders.order.api.dto.SupplierOrderDTO;
+import com.tricol.manage_supplier_orders.order.api.dto.UpdateOrderStatusRequest;
 import com.tricol.manage_supplier_orders.order.api.mapper.SupplierOrderApiMapper;
 import com.tricol.manage_supplier_orders.order.application.service.SupplierOrderService;
 import com.tricol.manage_supplier_orders.order.domain.model.SupplierOrder;
@@ -44,6 +45,13 @@ public class SupplierOrderController {
         SupplierOrder order = service.getById(id);
         return ResponseEntity.ok(apiMapper.toDto(order));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<SupplierOrderDTO> updateSupplierOrder(@PathVariable Long id, @Valid @RequestBody UpdateOrderStatusRequest req) {
+        SupplierOrder updated = service.updateStatus(id, req.getStatus());
+        return ResponseEntity.ok(apiMapper.toDto(updated));
+    }
+
 
 
 
