@@ -1,22 +1,22 @@
-package com.tricol.manage_supplier_orders.product.domain.model;
+package com.tricol.manage_supplier_orders.product.api.dto;
 
-import com.tricol.manage_supplier_orders.product.domain.enums.Category;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Product {
+public class ProductResponseDTO {
+
     private Long id;
     private String name;
     private String description;
     private Double price;
-    private Category category;
+    private String category;
     private String unit;
     private Integer stockQuantity;
     private Long supplierId;
-    private Double averageCost;
 }
