@@ -6,11 +6,12 @@ import com.tricol.manage_supplier_orders.order.api.mapper.SupplierOrderApiMapper
 import com.tricol.manage_supplier_orders.order.application.service.SupplierOrderService;
 import com.tricol.manage_supplier_orders.order.domain.model.SupplierOrder;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -31,6 +32,13 @@ public class SupplierOrderController {
         SupplierOrder saved = service.createOrder(domain);
         return ResponseEntity.ok(apiMapper.toDto(saved));
     }
+
+    @GetMapping
+    public ResponseEntity<Page<SupplierOrderDTO>> getAllSupplierOrders(Pageable pageable) {
+        Page<SupplierOrderDTO> page = service.list(pageable).map(apiMapper::toDto);
+        return ResponseEntity.ok(page);
+    }
+
 
 
 
