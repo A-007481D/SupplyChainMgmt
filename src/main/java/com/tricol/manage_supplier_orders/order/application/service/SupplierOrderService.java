@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Service
-public class SupplierOrderService implements com.tricol.manage_supplier_orders.order.application.ports.SupplierOrderServicePort {
+public class SupplierOrderService implements SupplierOrderServicePort {
 
     private final SupplierOrderRepository repository;
     private final ProductPort productPort;
@@ -34,8 +34,8 @@ public class SupplierOrderService implements com.tricol.manage_supplier_orders.o
     @Override
     public SupplierOrder createOrder(SupplierOrder order) {
         // basic validations
-        if (order.getSupplierId() == null || supplierPort.existsById(order.getSupplierId()).orElse(false) == false) {
-            throw new IllegalArgumentException("Supplier not found: " + order.getSupplierId());
+        if (order.getSupplier().getId() == null || !supplierPort.existsById(order.getSupplier().getId()).orElse(false)) {
+            throw new IllegalArgumentException("Supplier not found: " + order.getSupplier().getId());
         }
 
         // populate unitPrice from product if missing and compute subtotal
