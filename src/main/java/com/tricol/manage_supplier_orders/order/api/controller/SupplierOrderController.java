@@ -39,6 +39,13 @@ public class SupplierOrderController {
         return ResponseEntity.ok(page);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<SupplierOrderDTO> getSupplierOrder(@PathVariable Long id) {
+        SupplierOrder order = service.getById(id);
+        return ResponseEntity.ok(apiMapper.toDto(order));
+    }
+
+
 
 
 
