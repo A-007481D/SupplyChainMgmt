@@ -46,10 +46,16 @@ public class SupplierOrderController {
         return ResponseEntity.ok(apiMapper.toDto(order));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/status")
     public ResponseEntity<SupplierOrderDTO> updateSupplierOrder(@PathVariable Long id, @Valid @RequestBody UpdateOrderStatusRequest req) {
         SupplierOrder updated = service.updateStatus(id, req.getStatus());
         return ResponseEntity.ok(apiMapper.toDto(updated));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<SupplierOrderDTO> deleteSupplierOrder(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 
