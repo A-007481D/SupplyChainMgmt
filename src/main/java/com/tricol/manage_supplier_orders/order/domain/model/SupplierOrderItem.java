@@ -5,6 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+
+import com.tricol.manage_supplier_orders.order.domain.model.SupplierOrder;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +17,8 @@ public class SupplierOrderItem {
     private Integer quantity;
     private BigDecimal unitPrice;
     private BigDecimal subtotal;
-
+    private SupplierOrder order;
+    
     public SupplierOrderItem(Long id, Long productId, Integer quantity, BigDecimal unitPrice) {
         this.id = id;
         this.productId = productId;
@@ -31,4 +35,7 @@ public class SupplierOrderItem {
         }
     }
 
+    public void setOrder(SupplierOrder order) {
+        this.order = order;
+    }
 }
