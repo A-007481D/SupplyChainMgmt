@@ -77,7 +77,15 @@ public class SupplierOrderService implements SupplierOrderServicePort {
         // when delivered, create stock entries
         if (newStatus == OrderStatus.DELIVERED && prev != OrderStatus.DELIVERED) {
             for (SupplierOrderItem item : existing.getItems()) {
-                stockPort.recordEntry(item.getProductId(), item.getQuantity(), existing.getId());
+                if (item.getUnitPrice() == null) {
+                    throw new IllegalStateException("Cannot record stock entry: Unit price is missing for product " + item.getProductId());
+                }
+                stockPort.recordEntry(
+                    item.getProductId(), 
+                    item.getQuantity(), 
+                    existing.getId(),
+                    item.getUnitPrice()
+                );
             }
         }
 
