@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/stock")
+@RequestMapping("/api/v1/stock")
 public class StockController {
 
     private final StockServicePort service;

@@ -18,6 +18,8 @@ public class StockMovementDTO {
     private MovementType type;
     private Integer quantity;
     private Double unitCost;
+    private Double totalCost;
+    private Double remainingQuantity;
     private Long orderId;
     private OffsetDateTime createdAt;
 }

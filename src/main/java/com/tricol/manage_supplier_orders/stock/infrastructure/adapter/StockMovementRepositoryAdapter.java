@@ -1,6 +1,7 @@
 package com.tricol.manage_supplier_orders.stock.infrastructure.adapter;
 
 
+import com.tricol.manage_supplier_orders.stock.domain.enums.MovementType;
 import com.tricol.manage_supplier_orders.stock.domain.model.StockMovement;
 import com.tricol.manage_supplier_orders.stock.domain.ports.StockMovementRepository;
 import com.tricol.manage_supplier_orders.stock.infrastructure.persistence.entity.StockMovementJpaEntity;
@@ -11,7 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -57,5 +60,13 @@ public class StockMovementRepositoryAdapter implements StockMovementRepository {
     @Override
     public Page<StockMovement> findBySupplierOrderId(Long orderId, Pageable pageable) {
         return jpa.findBySupplierOrderId(orderId, pageable).map(mapper::toDomain);
+    }
+    
+    @Override
+    public List<StockMovement> findByProductIdAndTypeOrderByMovementDateAsc(Long productId, MovementType type) {
+        return jpa.findByProductIdAndTypeOrderByMovementDateAsc(productId, type)
+                .stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
     }
 }

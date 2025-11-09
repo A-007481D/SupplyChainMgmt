@@ -23,5 +23,13 @@ public class StockMovement {
     private Double unitCost; // cost per unit at entry
     private Double totalCost; // unitCost * quantity
     private OffsetDateTime movementDate;
-    private Long supplierOrderId; // optional
+    private Long supplierOrderId;
+    private Double remainingQuantity; // 4 fifo tracking
+    
+    public Double getRemainingQuantity() {
+        if (remainingQuantity == null && quantity != null && type == MovementType.ENTRY) {
+            return (double) quantity;
+        }
+        return remainingQuantity;
+    }
 }

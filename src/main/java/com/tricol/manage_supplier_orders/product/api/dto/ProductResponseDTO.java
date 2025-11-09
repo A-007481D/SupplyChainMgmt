@@ -19,4 +19,5 @@ public class ProductResponseDTO {
     private String unit;
     private Integer stockQuantity;
     private Long supplierId;
+    private Double averageCost;
 }

@@ -49,4 +49,15 @@ public class StockMovementJpaEntity {
 
     @Column(name = "supplier_order_id")
     private Long supplierOrderId;
+    
+    @Column(name = "remaining_quantity")
+    private Double remainingQuantity;
+    
+    @PrePersist
+    @PreUpdate
+    public void initRemainingQuantity() {
+        if (this.remainingQuantity == null && this.quantity != null && this.type == MovementType.ENTRY) {
+            this.remainingQuantity = (double) this.quantity;
+        }
+    }
 }

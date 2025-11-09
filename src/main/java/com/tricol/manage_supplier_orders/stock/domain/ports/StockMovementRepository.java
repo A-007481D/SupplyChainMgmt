@@ -1,11 +1,13 @@
 package com.tricol.manage_supplier_orders.stock.domain.ports;
 
 
+import com.tricol.manage_supplier_orders.stock.domain.enums.MovementType;
 import com.tricol.manage_supplier_orders.stock.domain.model.StockMovement;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -15,4 +17,5 @@ public interface StockMovementRepository {
     Page<StockMovement> findAll(Pageable pageable);
     Page<StockMovement> findByProductId(Long productId, Pageable pageable);
     Page<StockMovement> findBySupplierOrderId(Long orderId, Pageable pageable);
+    List<StockMovement> findByProductIdAndTypeOrderByMovementDateAsc(Long productId, MovementType type);
 }
