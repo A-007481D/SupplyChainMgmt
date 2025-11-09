@@ -1,0 +1,105 @@
+graph TB
+    subgraph EXTERNAL["External World"]
+        USER[User/Client]
+        DB[(PostgreSQL)]
+    end
+    
+    subgraph ADAPTERS_IN["Input Adapters - API Layer"]
+        REST1[REST Controller<br/>Supplier]
+        REST2[REST Controller<br/>Product]
+        REST3[REST Controller<br/>Order]
+        REST4[REST Controller<br/>Stock]
+    end
+    
+    subgraph CORE["Hexagon - Application Core"]
+        subgraph PORTS_IN["Input Ports"]
+            PORT_IN1[SupplierServicePort]
+            PORT_IN2[ProductServicePort]
+            PORT_IN3[OrderServicePort]
+            PORT_IN4[StockServicePort]
+        end
+        
+        subgraph DOMAIN["Domain Logic"]
+            SERVICE1[SupplierService]
+            SERVICE2[ProductService]
+            SERVICE3[OrderService]
+            SERVICE4[StockService]
+            MODEL[Domain Models<br/>Supplier, Product<br/>Order, StockMovement]
+        end
+        
+        subgraph PORTS_OUT["Output Ports"]
+            PORT_OUT1[SupplierRepositoryPort]
+            PORT_OUT2[ProductRepositoryPort]
+            PORT_OUT3[OrderRepositoryPort]
+            PORT_OUT4[StockRepositoryPort]
+            PORT_OUT5[StockPort]
+        end
+    end
+    
+    subgraph ADAPTERS_OUT["Output Adapters - Infrastructure"]
+        REPO1[Repository Adapter<br/>Supplier]
+        REPO2[Repository Adapter<br/>Product]
+        REPO3[Repository Adapter<br/>Order]
+        REPO4[Repository Adapter<br/>Stock]
+        STOCK_ADAPTER[StockAdapter<br/>Order→Stock Bridge]
+    end
+    
+    %% External to Input Adapters
+    USER -->|HTTP Requests| REST1
+    USER -->|HTTP Requests| REST2
+    USER -->|HTTP Requests| REST3
+    USER -->|HTTP Requests| REST4
+    
+    %% Input Adapters to Input Ports
+    REST1 --> PORT_IN1
+    REST2 --> PORT_IN2
+    REST3 --> PORT_IN3
+    REST4 --> PORT_IN4
+    
+    %% Input Ports to Services
+    PORT_IN1 -.implements.- SERVICE1
+    PORT_IN2 -.implements.- SERVICE2
+    PORT_IN3 -.implements.- SERVICE3
+    PORT_IN4 -.implements.- SERVICE4
+    
+    %% Services to Domain Models
+    SERVICE1 --> MODEL
+    SERVICE2 --> MODEL
+    SERVICE3 --> MODEL
+    SERVICE4 --> MODEL
+    
+    %% Services to Output Ports
+    SERVICE1 --> PORT_OUT1
+    SERVICE2 --> PORT_OUT2
+    SERVICE3 --> PORT_OUT3
+    SERVICE3 --> PORT_OUT5
+    SERVICE4 --> PORT_OUT4
+    SERVICE4 --> PORT_OUT2
+    
+    %% Output Ports to Output Adapters
+    PORT_OUT1 -.implements.- REPO1
+    PORT_OUT2 -.implements.- REPO2
+    PORT_OUT3 -.implements.- REPO3
+    PORT_OUT4 -.implements.- REPO4
+    PORT_OUT5 -.implements.- STOCK_ADAPTER
+    
+    %% Output Adapters to Database
+    REPO1 --> DB
+    REPO2 --> DB
+    REPO3 --> DB
+    REPO4 --> DB
+    STOCK_ADAPTER --> SERVICE4
+    
+    %% Styling
+    style EXTERNAL fill:#00,stroke:#333,stroke-width:2px
+    style ADAPTERS_IN fill:#2CAABF,stroke:#0288d1,stroke-width:3px
+    style CORE fill:#00,stroke:#7b1fa2,stroke-width:4px
+    style PORTS_IN fill:#8A9659,stroke:#3f51b5,stroke-width:2px
+    style DOMAIN fill:#876478,stroke:#c2185b,stroke-width:2px
+    style PORTS_OUT fill:#876478,stroke:#3f51b5,stroke-width:2px
+    style ADAPTERS_OUT fill:#BA227,stroke:#388e3c,stroke-width:3px
+    
+    style USER fill:#000
+    style DB fill:#34943F
+    
+    style MODEL fill:#849434

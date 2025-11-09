@@ -7,22 +7,40 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class SupplierOrder {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private LocalDate orderDate;
+    private OffsetDateTime orderDate;
     private OrderStatus status;
     private Supplier supplier;
-    private Double totalAmount;
+    private BigDecimal totalAmount;
+    private List<SupplierOrderItem> items = new ArrayList<>();
+
+    public void recalcTotal() {
+        this.totalAmount = items.stream()
+                .map(SupplierOrderItem::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public void addItem(SupplierOrderItem item) {
+        this.items.add(item);
+        recalcTotal();
+    }
+
+    public void removeItem(SupplierOrderItem item) {
+        items.remove(item);
+        recalcTotal();
+    }
+
 
 }

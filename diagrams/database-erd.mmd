@@ -1,0 +1,59 @@
+erDiagram
+    SUPPLIER ||--o{ PRODUCT : supplies
+    SUPPLIER ||--o{ SUPPLIER_ORDER : places
+    SUPPLIER_ORDER ||--|{ SUPPLIER_ORDER_ITEM : contains
+    PRODUCT ||--o{ SUPPLIER_ORDER_ITEM : "ordered in"
+    PRODUCT ||--o{ STOCK_MOVEMENT : tracks
+    SUPPLIER_ORDER ||--o{ STOCK_MOVEMENT : generates
+    
+    SUPPLIER {
+        bigint id PK
+        varchar company
+        varchar address
+        varchar contact
+        varchar email
+        varchar phone
+        varchar city
+        varchar ice
+    }
+    
+    PRODUCT {
+        bigint id PK
+        varchar name
+        text description
+        numeric price
+        varchar category
+        varchar unit
+        integer stock_quantity
+        bigint supplier_id FK
+        numeric average_cost
+    }
+    
+    SUPPLIER_ORDER {
+        bigint id PK
+        bigint supplier_id FK
+        timestamp order_date
+        varchar status
+        numeric total_amount
+    }
+    
+    SUPPLIER_ORDER_ITEM {
+        bigint id PK
+        bigint order_id FK
+        bigint product_id FK
+        integer quantity
+        numeric unit_price
+        numeric subtotal
+    }
+    
+    STOCK_MOVEMENT {
+        bigint id PK
+        bigint product_id FK
+        varchar type
+        integer quantity
+        numeric unit_cost
+        numeric total_cost
+        timestamp movement_date
+        bigint supplier_order_id FK
+        numeric remaining_quantity
+    }

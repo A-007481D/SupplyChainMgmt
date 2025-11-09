@@ -1,0 +1,114 @@
+sequenceDiagram
+    actor User
+    participant Controller as SupplierOrderController
+    participant OrderService as SupplierOrderService
+    participant StockAdapter as StockAdapter
+    participant StockService as StockServiceImpl
+    participant ProductRepo as ProductRepositoryPort
+    participant StockRepo as StockMovementRepository
+    participant Database as PostgreSQL
+
+    Note over User,Database: Order Delivery Flow with Automatic Stock Movement
+
+    %% Create Order
+    User->>Controller: POST /api/v1/orders<br/>{supplierId, items}
+    activate Controller
+    Controller->>OrderService: createOrder(order)
+    activate OrderService
+    OrderService->>OrderService: validateOrder()
+    OrderService->>OrderService: recalcTotal()
+    OrderService->>Database: save order
+    Database-->>OrderService: order (status=WAITING)
+    OrderService-->>Controller: SupplierOrder
+    Controller-->>User: 201 Created<br/>{id, status: WAITING}
+    deactivate OrderService
+    deactivate Controller
+
+    Note over User,Database: Status: WAITING → VALIDATED
+
+    %% Validate Order
+    User->>Controller: PUT /api/v1/orders/{id}/status<br/>{status: VALIDATED}
+    activate Controller
+    Controller->>OrderService: updateStatus(id, VALIDATED)
+    activate OrderService
+    OrderService->>OrderService: validateStatusTransition()
+    OrderService->>Database: update order
+    Database-->>OrderService: order updated
+    OrderService-->>Controller: SupplierOrder
+    Controller-->>User: 200 OK<br/>{status: VALIDATED}
+    deactivate OrderService
+    deactivate Controller
+
+    Note over User,Database: Status: VALIDATED → DELIVERED<br/>(Triggers Stock Movement Creation)
+
+    %% Deliver Order
+    User->>Controller: PUT /api/v1/orders/{id}/status<br/>{status: DELIVERED}
+    activate Controller
+    Controller->>OrderService: updateStatus(id, DELIVERED)
+    activate OrderService
+    
+    OrderService->>OrderService: validateStatusTransition()
+    OrderService->>OrderService: updateStockForOrder(order)
+    
+    loop For each order item
+        OrderService->>StockAdapter: recordEntry(productId, qty, orderId, price)
+        activate StockAdapter
+        
+        StockAdapter->>StockService: recordMovement(productId, ENTRY, qty, cost, orderId)
+        activate StockService
+        
+        StockService->>ProductRepo: findById(productId)
+        activate ProductRepo
+        ProductRepo->>Database: SELECT product
+        Database-->>ProductRepo: product data
+        ProductRepo-->>StockService: Product
+        deactivate ProductRepo
+        
+        StockService->>StockService: validateStockMovement()
+        StockService->>StockService: Build StockMovement
+        
+        alt Valuation = FIFO
+            StockService->>StockService: setRemainingQuantity(qty)
+        end
+        
+        StockService->>StockService: newStock = current + qty
+        
+        alt Movement = ENTRY
+            alt Valuation = CUMP
+                StockService->>StockService: calculateCumpCost()
+                Note right of StockService: (prevTotal + newTotal) / totalQty
+            else Valuation = FIFO
+                StockService->>StockService: Keep current avg cost
+            end
+            StockService->>StockService: product.setAverageCost(newCost)
+        end
+        
+        StockService->>StockService: product.setStockQuantity(newStock)
+        StockService->>ProductRepo: save(product)
+        activate ProductRepo
+        ProductRepo->>Database: UPDATE product
+        Database-->>ProductRepo: updated
+        ProductRepo-->>StockService: Product
+        deactivate ProductRepo
+        
+        StockService->>StockRepo: save(movement)
+        activate StockRepo
+        StockRepo->>Database: INSERT stock_movement
+        Database-->>StockRepo: saved
+        StockRepo-->>StockService: StockMovement
+        deactivate StockRepo
+        
+        StockService-->>StockAdapter: StockMovement
+        deactivate StockService
+        StockAdapter-->>OrderService: void
+        deactivate StockAdapter
+    end
+    
+    OrderService->>Database: UPDATE order status=DELIVERED
+    Database-->>OrderService: updated
+    OrderService-->>Controller: SupplierOrder
+    deactivate OrderService
+    Controller-->>User: 200 OK<br/>{status: DELIVERED}
+    deactivate Controller
+
+    Note over User,Database:  Stock Movement Created<br/> Product Stock Updated<br/> Average Cost Calculated

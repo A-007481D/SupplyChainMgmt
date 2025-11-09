@@ -3,3 +3,11 @@ databaseChangeLog:
       file: db/changelog/changelog-001-supplier.yaml
   - include:
       file: db/changelog/changelog-002-product.yaml
+  - include:
+      file: db/changelog/changelog-003-order.yaml
+  - include:
+      file: db/changelog/changelog-004-stock.yaml
+  - include:
+      file: db/changelog/changelog-005-add-remaining-quantity.yaml
+  - include:
+      file: db/changelog/changelog-006-add-average-cost.yaml

@@ -1,0 +1,88 @@
+graph TB
+    subgraph API["API Layer - REST Controllers"]
+        direction LR
+        A1[SupplierController<br/>/api/v1/suppliers]
+        A2[ProductController<br/>/api/v1/products]
+        A3[SupplierOrderController<br/>/api/v1/orders]
+        A4[StockController<br/>/api/v1/stock]
+    end
+    
+    subgraph APP["Application Layer - Business Logic"]
+        direction LR
+        B1[SupplierServiceImpl]
+        B2[ProductServiceImpl]
+        B3[SupplierOrderService]
+        B4[StockServiceImpl]
+    end
+    
+    subgraph DOMAIN["Domain Layer - Core Models"]
+        direction LR
+        C1[Supplier]
+        C2[Product]
+        C3[SupplierOrder]
+        C4[StockMovement]
+        C5[Ports/Interfaces]
+    end
+    
+    subgraph INFRA["Infrastructure Layer - Data Access"]
+        direction LR
+        D1[Repository Adapters]
+        D2[StockAdapter]
+        D3[JPA Entities]
+        D4[JPA Repositories]
+    end
+    
+    subgraph DB["Database"]
+        E1[(PostgreSQL<br/>tricolv2_db)]
+    end
+    
+    %% API to Application
+    A1 --> B1
+    A2 --> B2
+    A3 --> B3
+    A4 --> B4
+    
+    %% Application to Domain
+    B1 --> C5
+    B2 --> C5
+    B3 --> C5
+    B4 --> C5
+    
+    %% Domain to Infrastructure
+    C5 --> D1
+    C5 --> D2
+    
+    %% Infrastructure to Database
+    D1 --> D4
+    D2 --> D4
+    D4 --> E1
+    
+    %% Styling
+    style API fill:#1C1A1A,stroke:#0288d1,stroke-width:3px
+    style APP fill:#1C1A1A,stroke:#f57c00,stroke-width:3px
+    style DOMAIN fill:#1C1A1A,stroke:#7b1fa2,stroke-width:3px
+    style INFRA fill:#1C1A1A,stroke:#388e3c,stroke-width:3px
+    style DB fill:#1C1A1A,stroke:#c2185b,stroke-width:3px
+    
+    style A1 fill:#F527A6
+    style A2 fill:#F527A6
+    style A3 fill:#F527A6
+    style A4 fill:#F527A6
+    
+    style B1 fill:#CC27F5
+    style B2 fill:#CC27F5
+    style B3 fill:#CC27F5
+    style B4 fill:#CC27F5
+    
+    style C1 fill:#F52727
+    style C2 fill:#F52727
+    style C3 fill:#F52727
+    style C4 fill:#F52727
+    style C5 fill:#F52727
+    
+    style D1 fill:#277DF5
+    style D2 fill:#277DF5
+    style D3 fill:#277DF5
+    style D4 fill:#277DF5
+    
+    style E1 fill:#F54927

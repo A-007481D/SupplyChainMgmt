@@ -27,6 +27,9 @@ public class ProductJpaEntity {
     private String unit;
     private int stockQuantity;
     private Long supplierId;
+    
+    @Column(name = "average_cost")
+    private Double averageCost;
 
 //    @Version
 //    private Long version;

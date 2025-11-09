@@ -1,0 +1,132 @@
+classDiagram
+
+    %% Domain entities, Core Business Models
+    class Supplier {
+        -Long id
+        -String company
+        -String address
+        -String contact
+        -String email
+        -String phone
+        -String city
+        -String ice
+        +getId() Long
+        +getCompany() String
+        +getEmail() String
+    }
+    
+    class Product {
+        -Long id
+        -String name
+        -String description
+        -Double price
+        -Category category
+        -String unit
+        -Integer stockQuantity
+        -Long supplierId
+        -Double averageCost
+        +getId() Long
+        +getName() String
+        +getStockQuantity() Integer
+        +getAverageCost() Double
+        +setStockQuantity(Integer) void
+        +setAverageCost(Double) void
+    }
+    
+    class SupplierOrder {
+        -Long id
+        -Long supplierId
+        -OffsetDateTime orderDate
+        -OrderStatus status
+        -BigDecimal totalAmount
+        -List~SupplierOrderItem~ items
+        +getId() Long
+        +getStatus() OrderStatus
+        +getTotalAmount() BigDecimal
+        +getItems() List~SupplierOrderItem~
+        +setStatus(OrderStatus) void
+        +recalcTotal() void
+    }
+    
+    class SupplierOrderItem {
+        -Long id
+        -Long productId
+        -Integer quantity
+        -BigDecimal unitPrice
+        -BigDecimal subtotal
+        +getProductId() Long
+        +getQuantity() Integer
+        +getUnitPrice() BigDecimal
+        +getSubtotal() BigDecimal
+        +recalcSubtotal() void
+    }
+    
+    class StockMovement {
+        -Long id
+        -Long productId
+        -MovementType type
+        -Integer quantity
+        -Double unitCost
+        -Double totalCost
+        -OffsetDateTime movementDate
+        -Long supplierOrderId
+        -Double remainingQuantity
+        +getId() Long
+        +getProductId() Long
+        +getType() MovementType
+        +getQuantity() Integer
+        +getRemainingQuantity() Double
+        +setRemainingQuantity(Double) void
+    }
+    
+    %% enums
+    class OrderStatus {
+        <<enumeration>>
+        WAITING
+        VALIDATED
+        DELIVERED
+        CANCELLED
+    }
+    
+    class MovementType {
+        <<enumeration>>
+        ENTRY
+        EXIT
+        ADJUSTMENT
+    }
+    
+    class Category {
+        <<enumeration>>
+        TEXTILE
+        ACCESSORY
+        EQUIPMENT
+        PACKAGING
+        SAFETY_GEAR
+        MAINTENANCE
+        OTHER
+    }
+    
+    class StockValuationMethod {
+        <<enumeration>>
+        FIFO
+        CUMP
+    }
+    
+    %% relations
+    Supplier "1" --> "0..*" Product : supplies
+    Supplier "1" --> "0..*" SupplierOrder : places
+    %% comp
+    SupplierOrder "1" *-- "1..*" SupplierOrderItem : contains
+    SupplierOrderItem "0..*" --> "1" Product : references
+    SupplierOrder "1" --> "0..*" StockMovement : generates
+    Product "1" --> "0..*" StockMovement : tracks
+
+    %% Enum relations
+    SupplierOrder --> OrderStatus : has status
+    StockMovement --> MovementType : has type
+    Product --> Category : belongs to
+    StockMovement ..> StockValuationMethod : uses for calculation
+    
+    note for SupplierOrder "When status changes to DELIVERED,\nStockMovements are created automatically"
+    note for StockMovement "Tracks inventory changes\nSupports FIFO and CUMP valuation"
+    note for Product "averageCost calculated based on\nStockValuationMethod (FIFO/CUMP)"

@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 006-add-average-cost-to-product
+      author: system
+      changes:
+        - addColumn:
+            tableName: product
+            columns:
+              - column:
+                  name: average_cost
+                  type: numeric(12,2)
+                  remarks: "Average cost for stock valuation (FIFO/CUMP)"
