@@ -32,9 +32,12 @@ databaseChangeLog:
                   name: unit_cost
                   type: numeric(12,2)
               - column:
-                  name: order_id
+                  name: total_cost
+                  type: numeric(12,2)
+              - column:
+                  name: supplier_order_id
                   type: bigint
               - column:
-                  name: created_at
+                  name: movement_date
                   type: timestamp with time zone
                   defaultValueComputed: CURRENT_TIMESTAMP

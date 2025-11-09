@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-add-remaining-quantity
+      author: system
+      changes:
+        - addColumn:
+            tableName: stock_movement
+            columns:
+              - column:
+                  name: remaining_quantity
+                  type: double precision
+                  remarks: "For FIFO inventory tracking - tracks remaining quantity available from each entry"
